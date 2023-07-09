@@ -4,6 +4,7 @@
   "license": "Apache-2.0",
   "description": "Trust Wallet Core API wrapper and more.",
   "scripts": {
+    "prepare": "husky install",
     "start": "nodemon ./bin/www",
     "format": "prettier --write --ignore-unknown . && eslint \"./**/*.js\" --fix",
     "lint": "npx prettier --check . && eslint \"./**/*.js\""
@@ -15,6 +16,7 @@
   "devDependencies": {
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
+    "husky": "^8.0.3",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.0"
   }

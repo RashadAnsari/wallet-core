@@ -1,8 +1,8 @@
 var express = require('express');
-var indexRouter = require('./routes/index');
+var healthRouter = require('./routes/health');
 
 var app = express();
 app.use(express.json());
-app.use('/', indexRouter);
+app.use('/', healthRouter);
 
 module.exports = app;

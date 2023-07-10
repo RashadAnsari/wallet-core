@@ -49,6 +49,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /v1/transaction/url:
+    post:
+      tags:
+        - Transaction
+      summary: Get Transaction URL
+      description: By using this endpoint, you can retrieve the transaction URL.
+      operationId: GetTransactionUrl
+      parameters:
+        - name: coin_type
+          in: query
+          schema:
+            type: integer
+            format: int64
+            example: 3
+        - name: transaction_hash
+          in: query
+          schema:
+            type: string
+            example: 'bbd4a06ba81cd97a8f1e7ab4fd9fea9f324f5d2c83c50de2b19d6f3dc7197c4d'
+      responses:
+        200:
+          description: Response to getting the transaction URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTransactionUrlResponse'
+        400:
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     ErrorResponse:
@@ -95,3 +134,9 @@ components:
         private_key:
           type: string
           example: '3e421d9c54e97085b18dd39a9c9eee29eb3f9a289088a1b19ebbdc81e696a28a'
+    GetTransactionUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          example: 'https://blockchair.com/dogecoin/transaction/bbd4a06ba81cd97a8f1e7ab4fd9fea9f324f5d2c83c50de2b19d6f3dc7197c4d'

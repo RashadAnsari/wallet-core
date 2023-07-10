@@ -14,7 +14,9 @@ router.get('/v1/transaction/url', async function (req, res, next) {
     return res.status(400).json({ errors: errorMessages });
   }
 
-  const { CoinTypeConfiguration } = req.app.locals.core;
+  /** @type {import('@trustwallet/wallet-core').WalletCore} */
+  const core = req.app.locals.core;
+  const { CoinTypeConfiguration } = core;
   const { coin_type, transaction_hash } = req.query;
 
   try {

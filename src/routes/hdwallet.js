@@ -18,6 +18,7 @@ router.post('/v1/hdwallet', async function (req, res, next) {
     return res.status(400).json({ errors: errorMessages });
   }
 
+  /** @type {import('@trustwallet/wallet-core').WalletCore} */
   const { HDWallet, AnyAddress } = req.app.locals.core;
   const { coin_type, account_index, external_chain, address_index } = req.body;
 

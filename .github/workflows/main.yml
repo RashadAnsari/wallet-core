@@ -30,6 +30,8 @@ jobs:
     name: Build
     runs-on: ubuntu-20.04
     if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - lint
     permissions:
       contents: read
       packages: write

@@ -1,8 +1,24 @@
-var express = require('express');
-var healthRouter = require('./routes/health');
+const express = require('express');
+const healthRouter = require('./routes/health');
+const hdwalletRouter = require('./routes/hdwallet');
+const { initWasm } = require('@trustwallet/wallet-core');
 
-var app = express();
+const app = express();
 app.use(express.json());
 app.use('/', healthRouter);
+app.use('/', hdwalletRouter);
 
-module.exports = app;
+// eslint-disable-next-line no-unused-vars
+function errorHandler(err, req, res, next) {
+  console.error(err);
+  const statusCode = err.statusCode || 500;
+  const errorMessages = err.message || 'Internal Server Error';
+  res.status(statusCode).json({ errors: [errorMessages] });
+}
+
+app.use(errorHandler);
+
+module.exports = async function () {
+  app.locals.core = await initWasm(); // Initialize WebAssembly.
+  return app;
+};

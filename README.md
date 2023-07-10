@@ -25,5 +25,5 @@ Make sure to set these environment variables accordingly when running the applic
 To run the application using Docker, run the command below:
 
 ```bash
-docker run -p 3000:3000 -e MNEMONIC="remember relief wool then dad equip team guard provide clever mom kiss" ghcr.io/RashadAnsari/wallet-core
+docker run -p 3000:3000 -e MNEMONIC="remember relief wool then dad equip team guard provide clever mom kiss" ghcr.io/rashadansari/wallet-core
 ```

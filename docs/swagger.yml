@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: Wallet Core API
+  description: Trust Wallet Core API wrapper and more.
+  version: 0.0.0
+servers:
+  - url: http://127.0.0.1:3000
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health
+      description: This endpoint will check the readiness and liveness of the service.
+      operationId: Health
+      responses:
+        204:
+          description: No Content response.
+
+  /v1/hdwallet:
+    post:
+      tags:
+        - HDWallet
+      summary: Create an HDWallet
+      description: By using this endpoint, you can create an HDWallet using request parameters.
+      operationId: CreateHDWallet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHDWalletRequest'
+      responses:
+        200:
+          description: Response to creating an HDWallet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateHDWalletResponse'
+        400:
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - Something Went Wrong!
+    CreateHDWalletRequest:
+      type: object
+      properties:
+        coin_type:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 60
+        account_index:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 0
+        external_chain:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 0
+        address_index:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 1
+    CreateHDWalletResponse:
+      type: object
+      properties:
+        address:
+          type: string
+          example: '0xb315B05d06f74b27D3869219f41119585Fcb8656'
+        public_key:
+          type: string
+          example: '04a6f1596c27229b369e92feab4345cabc6b057baadf53211650b27aa7f1b760f9d3f0cb892067c4b9a0aaa7464a9797aa805c77fdca73da49899c295f47355990'
+        private_key:
+          type: string
+          example: '3e421d9c54e97085b18dd39a9c9eee29eb3f9a289088a1b19ebbdc81e696a28a'

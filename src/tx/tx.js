@@ -6,7 +6,7 @@ const transactionAPIs = {
       'https://api.blockchair.com/bitcoin/dashboards/transaction/<transactionId>',
     transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
     latestBlock: 'https://api.blockchair.com/bitcoin/stats',
-    latestBlockHeight: 'data.blocks',
+    latestBlockHeight: 'context.state',
     requireConfirmations: 6,
   },
   LTC: {
@@ -14,15 +14,15 @@ const transactionAPIs = {
       'https://api.blockchair.com/litecoin/dashboards/transaction/<transactionId>',
     transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
     latestBlock: 'https://api.blockchair.com/litecoin/stats',
-    latestBlockHeight: 'data.blocks',
-    requireConfirmations: 6,
+    latestBlockHeight: 'context.state',
+    requireConfirmations: 24,
   },
   ETH: {
     transactionInfo:
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
     transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
     latestBlock: 'https://api.blockchair.com/ethereum/stats',
-    latestBlockHeight: 'data.blocks',
+    latestBlockHeight: 'context.state',
     requireConfirmations: 6,
   },
   DOGE: {
@@ -30,7 +30,7 @@ const transactionAPIs = {
       'https://api.blockchair.com/dogecoin/dashboards/transaction/<transactionId>',
     transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
     latestBlock: 'https://api.blockchair.com/dogecoin/stats',
-    latestBlockHeight: 'data.blocks',
+    latestBlockHeight: 'context.state',
     requireConfirmations: 15,
   },
   USDT: {
@@ -38,7 +38,7 @@ const transactionAPIs = {
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
     transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
     latestBlock: 'https://api.blockchair.com/ethereum/stats',
-    latestBlockHeight: 'data.blocks',
+    latestBlockHeight: 'context.state',
     requireConfirmations: 6,
   },
   USDC: {
@@ -46,15 +46,15 @@ const transactionAPIs = {
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
     transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
     latestBlock: 'https://api.blockchair.com/ethereum/stats',
-    latestBlockHeight: 'data.blocks',
+    latestBlockHeight: 'context.state',
     requireConfirmations: 6,
   },
   ADA: {
     transactionInfo:
-      'https://api.blockchair.com/cardano/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
+      'https://api.blockchair.com/cardano/raw/transaction/<transactionId>',
+    transactionBlockHeight: 'data.<transactionId>.transaction.ctsBlockHeight',
     latestBlock: 'https://api.blockchair.com/cardano/stats',
-    latestBlockHeight: 'data.blocks',
+    latestBlockHeight: 'context.state',
     requireConfirmations: 6,
   },
   SOL: {},
@@ -100,7 +100,11 @@ export const getTransactionInfo = async (symbol, transactionId) => {
     apiDetails.latestBlockHeight,
   );
 
-  const confirmations = latestBlockHeight - transactionHeight;
+  let confirmations = latestBlockHeight - transactionHeight + 1;
+  if (confirmations < 0) {
+    confirmations = 0;
+  }
+
   const confirmed = confirmations >= apiDetails.requireConfirmations;
 
   return {

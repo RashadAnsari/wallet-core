@@ -1,5 +1,6 @@
 import joi from 'joi';
 import { Router } from 'express';
+import { getTransactionInfo } from '../tx/tx.js';
 import { supportedSymbols, getChainId } from '../cfg.js';
 
 const router = Router();
@@ -30,8 +31,10 @@ router.get('/v1/transaction', async (req, res, next) => {
       coinType,
       transactionId,
     );
+    const info = await getTransactionInfo(symbol, transactionId);
 
-    const response = { url };
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const response = { ...info, url };
 
     res.json(response);
   } catch (error) {

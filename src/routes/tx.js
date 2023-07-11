@@ -13,7 +13,7 @@ const getTransactionSchema = joi.object({
 });
 
 router.get('/v1/transaction', async (req, res, next) => {
-  const { error } = getTransactionSchema.validate(req.query);
+  const { value, error } = getTransactionSchema.validate(req.query);
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
     return res.status(400).json({ errors: errorMessages });
@@ -22,7 +22,7 @@ router.get('/v1/transaction', async (req, res, next) => {
   /** @type {import('@trustwallet/wallet-core').WalletCore} */
   const core = req.app.locals.core;
   const { CoinTypeConfiguration } = core;
-  const { symbol, transactionId } = req.query;
+  const { symbol, transactionId } = value;
 
   try {
     const coinType = { value: getChainId(symbol) };

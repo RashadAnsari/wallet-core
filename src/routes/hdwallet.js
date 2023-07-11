@@ -10,13 +10,13 @@ const hdwalletPostSchema = joi.object({
     .string()
     .valid(...supportedSymbols)
     .required(),
-  accountIndex: joi.number().min(0).default(0).optional(),
-  externalChain: joi.number().min(0).default(0).optional(),
-  addressIndex: joi.number().min(0).default(0).optional(),
+  accountIndex: joi.number().min(0).default(0),
+  externalChain: joi.number().min(0).default(0),
+  addressIndex: joi.number().min(0).default(0),
 });
 
 router.post('/v1/hdwallet', async (req, res, next) => {
-  const { error } = hdwalletPostSchema.validate(req.body);
+  const { value, error } = hdwalletPostSchema.validate(req.body);
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
     return res.status(400).json({ errors: errorMessages });
@@ -24,7 +24,7 @@ router.post('/v1/hdwallet', async (req, res, next) => {
 
   /** @type {import('@trustwallet/wallet-core').WalletCore} */
   const { HDWallet, AnyAddress } = req.app.locals.core;
-  const { symbol, accountIndex, externalChain, addressIndex } = req.body;
+  const { symbol, accountIndex, externalChain, addressIndex } = value;
 
   try {
     const hdwallet = HDWallet.createWithMnemonic(mnemonic, passphrase);

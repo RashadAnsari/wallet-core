@@ -28,5 +28,5 @@ export const supportedSymbolsMap = {
 export const supportedSymbols = Object.keys(supportedSymbolsMap);
 
 export function getChainId(symbol) {
-  return { value: supportedSymbolsMap[symbol] };
+  return supportedSymbolsMap[symbol];
 }

@@ -1,5 +1,4 @@
 {
-  "javascript.suggestionActions.enabled": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },

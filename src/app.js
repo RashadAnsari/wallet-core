@@ -1,10 +1,11 @@
-const express = require('express');
-const healthRouter = require('./routes/health');
-const hdwalletRouter = require('./routes/hdwallet');
-const transactionRouter = require('./routes/transaction');
-const { initWasm } = require('@trustwallet/wallet-core');
+import express from 'express';
+import healthRouter from './routes/health.js';
+import transactionRouter from './routes/tx.js';
+import hdwalletRouter from './routes/hdwallet.js';
+import { initWasm } from '@trustwallet/wallet-core';
 
 const app = express();
+
 app.use(express.json());
 app.use('/', healthRouter);
 app.use('/', hdwalletRouter);
@@ -20,7 +21,7 @@ function errorHandler(err, req, res, next) {
 
 app.use(errorHandler);
 
-module.exports = async function () {
+export default async function () {
   app.locals.core = await initWasm(); // Initialize WebAssembly.
   return app;
-};
+}

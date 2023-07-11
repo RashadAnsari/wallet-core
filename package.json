@@ -2,11 +2,12 @@
   "name": "wallet-core",
   "license": "Apache-2.0",
   "description": "Trust Wallet Core API wrapper and more.",
+  "type": "module",
   "scripts": {
     "prepare": "husky install",
-    "start": "nodemon ./bin/www",
-    "format": "prettier --write --ignore-unknown . && eslint \"./**/*.js\" --fix",
-    "lint": "npx prettier --check . && eslint \"./**/*.js\""
+    "start": "nodemon ./bin/www.js",
+    "format": "prettier --write --ignore-unknown . && eslint \"./**/*.{js,cjs}\" --fix",
+    "lint": "npx prettier --check . && eslint \"./**/*.{js,cjs}\""
   },
   "dependencies": {
     "@trustwallet/wallet-core": "^3.2.5",

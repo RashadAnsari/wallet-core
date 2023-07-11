@@ -93,6 +93,7 @@ const transactionAPIs = {
     requireConfirmations: 12,
   },
   SOL: {
+    // Too many request issue.
     txInfoUrl: 'https://api.solscan.io/transaction?tx=<transactionId>',
     lastBlockUrl: null,
     confirmationsFormula: (transactionId, txInfo) => {

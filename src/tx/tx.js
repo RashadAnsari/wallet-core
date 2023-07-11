@@ -2,105 +2,132 @@ import axios from 'axios';
 
 const transactionAPIs = {
   BTC: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/bitcoin/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
-    latestBlock: 'https://api.blockchair.com/bitcoin/stats',
-    latestBlockHeight: 'context.state',
+    lastBlockUrl: 'https://api.blockchair.com/bitcoin/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['block_id'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
     requireConfirmations: 6,
   },
   LTC: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/litecoin/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
-    latestBlock: 'https://api.blockchair.com/litecoin/stats',
-    latestBlockHeight: 'context.state',
+    lastBlockUrl: 'https://api.blockchair.com/litecoin/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['block_id'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
     requireConfirmations: 24,
   },
   ETH: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
-    latestBlock: 'https://api.blockchair.com/ethereum/stats',
-    latestBlockHeight: 'context.state',
-    requireConfirmations: 6,
+    lastBlockUrl: 'https://api.blockchair.com/ethereum/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['block_id'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
+    requireConfirmations: 12,
   },
   DOGE: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/dogecoin/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
-    latestBlock: 'https://api.blockchair.com/dogecoin/stats',
-    latestBlockHeight: 'context.state',
-    requireConfirmations: 15,
+    lastBlockUrl: 'https://api.blockchair.com/dogecoin/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['block_id'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
+    requireConfirmations: 10,
   },
   USDT: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
-    latestBlock: 'https://api.blockchair.com/ethereum/stats',
-    latestBlockHeight: 'context.state',
-    requireConfirmations: 6,
+    lastBlockUrl: 'https://api.blockchair.com/ethereum/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['block_id'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
+    requireConfirmations: 12,
   },
   USDC: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.block_id',
-    latestBlock: 'https://api.blockchair.com/ethereum/stats',
-    latestBlockHeight: 'context.state',
-    requireConfirmations: 6,
+    lastBlockUrl: 'https://api.blockchair.com/ethereum/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['block_id'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
+    requireConfirmations: 12,
   },
   ADA: {
-    transactionInfo:
+    txInfoUrl:
       'https://api.blockchair.com/cardano/raw/transaction/<transactionId>',
-    transactionBlockHeight: 'data.<transactionId>.transaction.ctsBlockHeight',
-    latestBlock: 'https://api.blockchair.com/cardano/stats',
-    latestBlockHeight: 'context.state',
-    requireConfirmations: 6,
+    lastBlockUrl: 'https://api.blockchair.com/cardano/stats',
+    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+      const blockHeight =
+        txInfo['data'][transactionId]['transaction']['ctsBlockHeight'];
+      const lastBlockHeight = lastBlock['context']['state'];
+
+      return lastBlockHeight - blockHeight + 1;
+    },
+    requireConfirmations: 12,
   },
-  SOL: {},
-};
-
-const getObjectKey = (object, key) => {
-  const keys = key.split('.');
-
-  let currentObject = object;
-
-  for (let i = 0; i < keys.length; i++) {
-    currentObject = currentObject[keys[i]];
-    if (currentObject === undefined) {
-      return undefined;
-    }
-  }
-
-  return currentObject;
+  SOL: {
+    txInfoUrl: 'https://api.solscan.io/transaction?tx=<transactionId>',
+    lastBlockUrl: null,
+    confirmationsFormula: (transactionId, txInfo) => {
+      return (txInfo.slot * 60 * 60) / 2000;
+    },
+    requireConfirmations: 2,
+  },
 };
 
 export const getTransactionInfo = async (symbol, transactionId) => {
   const apiDetails = transactionAPIs[symbol];
 
-  const transactionResponse = await axios.get(
-    apiDetails.transactionInfo.replace('<transactionId>', transactionId),
+  let txInfo = null;
+  const txInfoResponse = await axios.get(
+    apiDetails.txInfoUrl.replace('<transactionId>', transactionId),
   );
-  const transactionData = transactionResponse.data;
+  txInfo = txInfoResponse.data;
 
-  const latestBlockResponse = await axios.get(apiDetails.latestBlock);
-  const latestBlockData = latestBlockResponse.data;
+  let lastBlock = null;
+  if (apiDetails.lastBlockUrl) {
+    const latestBlockResponse = await axios.get(apiDetails.lastBlockUrl);
+    lastBlock = latestBlockResponse.data;
+  }
 
-  const transactionBlockHeightKey = apiDetails.transactionBlockHeight.replace(
-    '<transactionId>',
-    transactionId,
-  );
+  let confirmations = null;
+  if (lastBlock) {
+    confirmations = apiDetails.confirmationsFormula(
+      transactionId,
+      txInfo,
+      lastBlock,
+    );
+  } else {
+    confirmations = apiDetails.confirmationsFormula(transactionId, txInfo);
+  }
 
-  const transactionHeight = getObjectKey(
-    transactionData,
-    transactionBlockHeightKey,
-  );
-  const latestBlockHeight = getObjectKey(
-    latestBlockData,
-    apiDetails.latestBlockHeight,
-  );
-
-  let confirmations = latestBlockHeight - transactionHeight + 1;
   if (confirmations < 0) {
     confirmations = 0;
   }

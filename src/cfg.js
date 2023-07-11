@@ -21,9 +21,7 @@ export const supportedSymbolsMap = {
   ETH: 60,
   DOGE: 3,
   USDT: 60,
-  USDC: 60,
   ADA: 1815,
-  SOL: 501,
 };
 export const supportedSymbols = Object.keys(supportedSymbolsMap);
 

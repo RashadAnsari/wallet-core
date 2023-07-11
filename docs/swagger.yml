@@ -137,6 +137,17 @@ components:
     GetTransactionInfoResponse:
       type: object
       properties:
+        confirmed:
+          type: boolean
+          example: true
+        confirmations:
+          type: integer
+          format: int64
+          example: 26
+        requireConfirmations:
+          type: integer
+          format: int64
+          example: 10
         url:
           type: string
           example: 'https://blockchair.com/dogecoin/transaction/bbd4a06ba81cd97a8f1e7ab4fd9fea9f324f5d2c83c50de2b19d6f3dc7197c4d'

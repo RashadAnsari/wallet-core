@@ -1,6 +1,6 @@
 import joi from 'joi';
 import { Router } from 'express';
-import { getTransactionInfo } from '../tx/tx.js';
+import { getTransactionInfo } from '../crypto/tx.js';
 import { supportedSymbols, getChainId } from '../cfg.js';
 
 const router = Router();

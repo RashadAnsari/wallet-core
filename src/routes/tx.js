@@ -1,6 +1,6 @@
 import joi from 'joi';
 import { Router } from 'express';
-import { getTransactionInfo } from '../crypto/tx.js';
+import { getTransactionInfo, getWalletTransactions } from '../crypto/tx.js';
 import { supportedSymbols, getChainId } from '../cfg.js';
 
 const router = Router();
@@ -34,6 +34,32 @@ router.get('/v1/transaction', async (req, res, next) => {
     const info = await getTransactionInfo(symbol, transactionId);
 
     const response = { ...info, url };
+
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+const getWalletTransactionsSchema = joi.object({
+  symbol: joi
+    .string()
+    .valid(...supportedSymbols)
+    .required(),
+  walletId: joi.string().required(),
+});
+
+router.get('/v1/wallet/transactions', async (req, res, next) => {
+  const { value, error } = getWalletTransactionsSchema.validate(req.query);
+  if (error) {
+    const errorMessages = error.details.map((detail) => detail.message);
+    return res.status(400).json({ errors: errorMessages });
+  }
+
+  const { symbol, walletId } = value;
+
+  try {
+    const response = await getWalletTransactions(symbol, walletId);
 
     res.json(response);
   } catch (error) {

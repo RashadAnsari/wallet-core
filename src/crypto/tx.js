@@ -87,27 +87,6 @@ const transactionInfoAPIs = {
     },
     requireConfirmations: 10,
   },
-  USDT: {
-    txInfoUrl:
-      'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
-    lastBlockUrl: null,
-    // lastBlockUrl: 'https://api.blockchair.com/ethereum/stats',
-    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
-      const blockHeight =
-        txInfo['data'][transactionId]['transaction']['block_id'];
-      if (blockHeight === -1) {
-        return 0;
-      }
-
-      const lastBlockHeight = lastBlock
-        ? lastBlock['context']['state']
-        : txInfo['context']['state'];
-
-      return lastBlockHeight - blockHeight + 1;
-    },
-    requireConfirmations: 12,
-  },
   ADA: {
     txInfoUrl:
       'https://api.blockchair.com/cardano/raw/transaction/<transactionId>',
@@ -237,7 +216,6 @@ const walletTransactionsAPIs = {
       return txs;
     },
   },
-  USDT: {},
   ADA: {},
 };
 

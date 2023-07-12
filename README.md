@@ -29,3 +29,7 @@ To run the application using Docker, run the command below:
 ```bash
 docker run -p 3000:3000 -e MNEMONIC="remember relief wool then dad equip team guard provide clever mom kiss" ghcr.io/rashadansari/wallet-core
 ```
+
+## Supported Cryptocurrencies
+
+BTC, LTC, ETH, DOGE, ADA

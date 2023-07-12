@@ -6,19 +6,15 @@ const transactionInfoAPIs = {
   BTC: {
     txInfoUrl:
       'https://api.blockchair.com/bitcoin/dashboards/transaction/<transactionId>',
-    lastBlockUrl: null,
-    // lastBlockUrl: 'https://api.blockchair.com/bitcoin/stats',
     queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+    confirmationsFormula: (transactionId, txInfo) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
       if (blockHeight === -1) {
         return 0;
       }
 
-      const lastBlockHeight = lastBlock
-        ? lastBlock['context']['state']
-        : txInfo['context']['state'];
+      const lastBlockHeight = txInfo['context']['state'];
 
       return lastBlockHeight - blockHeight + 1;
     },
@@ -27,19 +23,15 @@ const transactionInfoAPIs = {
   LTC: {
     txInfoUrl:
       'https://api.blockchair.com/litecoin/dashboards/transaction/<transactionId>',
-    lastBlockUrl: null,
-    // lastBlockUrl: 'https://api.blockchair.com/litecoin/stats',
     queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+    confirmationsFormula: (transactionId, txInfo) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
       if (blockHeight === -1) {
         return 0;
       }
 
-      const lastBlockHeight = lastBlock
-        ? lastBlock['context']['state']
-        : txInfo['context']['state'];
+      const lastBlockHeight = txInfo['context']['state'];
 
       return lastBlockHeight - blockHeight + 1;
     },
@@ -48,19 +40,15 @@ const transactionInfoAPIs = {
   ETH: {
     txInfoUrl:
       'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
-    lastBlockUrl: null,
-    // lastBlockUrl: 'https://api.blockchair.com/ethereum/stats',
     queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+    confirmationsFormula: (transactionId, txInfo) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
       if (blockHeight === -1) {
         return 0;
       }
 
-      const lastBlockHeight = lastBlock
-        ? lastBlock['context']['state']
-        : txInfo['context']['state'];
+      const lastBlockHeight = txInfo['context']['state'];
 
       return lastBlockHeight - blockHeight + 1;
     },
@@ -69,19 +57,15 @@ const transactionInfoAPIs = {
   DOGE: {
     txInfoUrl:
       'https://api.blockchair.com/dogecoin/dashboards/transaction/<transactionId>',
-    lastBlockUrl: null,
-    // lastBlockUrl: 'https://api.blockchair.com/dogecoin/stats',
     queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+    confirmationsFormula: (transactionId, txInfo) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
       if (blockHeight === -1) {
         return 0;
       }
 
-      const lastBlockHeight = lastBlock
-        ? lastBlock['context']['state']
-        : txInfo['context']['state'];
+      const lastBlockHeight = txInfo['context']['state'];
 
       return lastBlockHeight - blockHeight + 1;
     },
@@ -90,19 +74,15 @@ const transactionInfoAPIs = {
   ADA: {
     txInfoUrl:
       'https://api.blockchair.com/cardano/raw/transaction/<transactionId>',
-    lastBlockUrl: null,
-    // lastBlockUrl: 'https://api.blockchair.com/cardano/stats',
     queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-    confirmationsFormula: (transactionId, txInfo, lastBlock) => {
+    confirmationsFormula: (transactionId, txInfo) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['ctsBlockHeight'];
       if (blockHeight === -1) {
         return 0;
       }
 
-      const lastBlockHeight = lastBlock
-        ? lastBlock['context']['state']
-        : txInfo['context']['state'];
+      const lastBlockHeight = txInfo['context']['state'];
 
       return lastBlockHeight - blockHeight + 1;
     },
@@ -113,24 +93,15 @@ const transactionInfoAPIs = {
 export const getTransactionInfo = async (symbol, transactionId) => {
   const apiDetails = transactionInfoAPIs[symbol];
 
-  let txInfo = null;
   const txInfoResponse = await axios.get(
     `${apiDetails.txInfoUrl.replace('<transactionId>', transactionId)}${
       apiDetails.queryStrings
     }`,
   );
-  txInfo = txInfoResponse.data;
-
-  let lastBlock = null;
-  if (apiDetails.lastBlockUrl) {
-    const latestBlockResponse = await axios.get(apiDetails.lastBlockUrl);
-    lastBlock = latestBlockResponse.data;
-  }
 
   let confirmations = apiDetails.confirmationsFormula(
     transactionId,
-    txInfo,
-    lastBlock,
+    txInfoResponse.data,
   );
 
   if (confirmations < 0) {
@@ -216,7 +187,50 @@ const walletTransactionsAPIs = {
       return txs;
     },
   },
-  ADA: {},
+  ADA: {
+    dataUrl: 'https://api.blockchair.com/cardano/raw/address/<walletId>',
+    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
+    extractRequireData: (walletId, data) => {
+      const transactions = data['data'][walletId]['address']['caTxList'];
+
+      const txs = [];
+      for (const i in transactions) {
+        const tx = transactions[i];
+        const inputs = tx['ctbInputs'];
+        const outputs = tx['ctbOutputs'];
+
+        let inputAmount = 0;
+        for (const j in inputs) {
+          const address = inputs[j]['ctaAddress'];
+          if (address === walletId) {
+            const amountStr = inputs[j]['ctaAmount']['getCoin'];
+            const amount = parseInt(amountStr, 10);
+            inputAmount += amount;
+          }
+        }
+
+        let outputAmount = 0;
+        for (const j in outputs) {
+          const address = outputs[j]['ctaAddress'];
+          if (address === walletId) {
+            const amountStr = outputs[j]['ctaAmount']['getCoin'];
+            const amount = parseInt(amountStr, 10);
+            outputAmount += amount;
+          }
+        }
+
+        const balanceChange = outputAmount - inputAmount; // ADA
+
+        txs.push({
+          transactionHash: tx['ctbId'],
+          timestamp: tx['ctbTimeIssued'], // seconds.
+          balanceChange: balanceChange,
+        });
+      }
+
+      return txs;
+    },
+  },
 };
 
 export const getWalletTransactions = async (symbol, walletId) => {

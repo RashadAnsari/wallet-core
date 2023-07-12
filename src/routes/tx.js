@@ -33,7 +33,6 @@ router.get('/v1/transaction', async (req, res, next) => {
     );
     const info = await getTransactionInfo(symbol, transactionId);
 
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const response = { ...info, url };
 
     res.json(response);

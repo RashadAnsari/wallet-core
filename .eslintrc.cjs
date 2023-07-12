@@ -8,5 +8,8 @@ module.exports = {
     node: true,
   },
   extends: ['eslint:recommended', 'plugin:node/recommended'],
-  rules: {},
+  rules: {
+    'no-constant-condition': 'off',
+    'node/no-unsupported-features/es-syntax': 'off',
+  },
 };

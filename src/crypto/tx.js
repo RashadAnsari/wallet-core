@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { blockchairAPIKey } from '../cfg.js';
 
 const transactionAPIs = {
   BTC: {
@@ -20,6 +21,7 @@ const transactionAPIs = {
       return lastBlockHeight - blockHeight + 1;
     },
     requireConfirmations: 6,
+    queryStrings: `?key=${blockchairAPIKey}` ? blockchairAPIKey : '',
   },
   LTC: {
     txInfoUrl:
@@ -40,6 +42,7 @@ const transactionAPIs = {
       return lastBlockHeight - blockHeight + 1;
     },
     requireConfirmations: 24,
+    queryStrings: `?key=${blockchairAPIKey}` ? blockchairAPIKey : '',
   },
   ETH: {
     txInfoUrl:
@@ -60,6 +63,7 @@ const transactionAPIs = {
       return lastBlockHeight - blockHeight + 1;
     },
     requireConfirmations: 12,
+    queryStrings: `?key=${blockchairAPIKey}` ? blockchairAPIKey : '',
   },
   DOGE: {
     txInfoUrl:
@@ -80,6 +84,7 @@ const transactionAPIs = {
       return lastBlockHeight - blockHeight + 1;
     },
     requireConfirmations: 10,
+    queryStrings: `?key=${blockchairAPIKey}` ? blockchairAPIKey : '',
   },
   USDT: {
     txInfoUrl:
@@ -100,6 +105,7 @@ const transactionAPIs = {
       return lastBlockHeight - blockHeight + 1;
     },
     requireConfirmations: 12,
+    queryStrings: `?key=${blockchairAPIKey}` ? blockchairAPIKey : '',
   },
   ADA: {
     txInfoUrl:
@@ -120,6 +126,7 @@ const transactionAPIs = {
       return lastBlockHeight - blockHeight + 1;
     },
     requireConfirmations: 12,
+    queryStrings: `?key=${blockchairAPIKey}` ? blockchairAPIKey : '',
   },
 };
 
@@ -128,7 +135,9 @@ export const getTransactionInfo = async (symbol, transactionId) => {
 
   let txInfo = null;
   const txInfoResponse = await axios.get(
-    apiDetails.txInfoUrl.replace('<transactionId>', transactionId),
+    `${apiDetails.txInfoUrl.replace('<transactionId>', transactionId)}${
+      apiDetails.queryStrings
+    }`,
   );
   txInfo = txInfoResponse.data;
 

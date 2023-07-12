@@ -14,6 +14,7 @@ function getEnv(env, defaultValue = null) {
 export const port = getEnv('PORT', 3000);
 export const mnemonic = getEnv('MNEMONIC');
 export const passphrase = getEnv('PASSPHRASE', '');
+export const blockchairAPIKey = getEnv('BLOCKCHAIR_API_KEY', '');
 
 export const supportedSymbolsMap = {
   BTC: 0,

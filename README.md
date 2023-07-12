@@ -18,6 +18,8 @@ The application relies on the following environment variables for configuration:
 
 - `PASSPHRASE`: An optional passphrase or password associated with the mnemonic phrase. If not provided, the default value is set to an empty string.
 
+- `BLOCKCHAIR_API_KEY`: An optional secret key that you get from [Blockchair](https://blockchair.com/api/docs#link_M05) when you sign up for their API. This key is used to authenticate your requests to the Blockchair API. If not provided, you can only send 1440 requests per day.
+
 Make sure to set these environment variables accordingly when running the application. You can either export them in your shell environment or provide them in a `.env` file in the root directory of your project.
 
 ## Run using Docker

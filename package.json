@@ -3,6 +3,9 @@
   "license": "Apache-2.0",
   "description": "Trust Wallet Core API wrapper and more.",
   "type": "module",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "prepare": "husky install",
     "start": "nodemon ./bin/www.js",

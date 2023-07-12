@@ -163,7 +163,38 @@ const walletTransactionsAPIs = {
       return txs;
     },
   },
-  ETH: {},
+  ETH: {
+    dataUrl:
+      'https://api.blockchair.com/ethereum/dashboards/address/<walletId>',
+    queryStrings: blockchairAPIKey
+      ? `?key=${blockchairAPIKey}&transaction_details=true`
+      : '?transaction_details=true',
+    extractRequireData: (walletId, data) => {
+      const transactions = data['data'][walletId]['calls'];
+
+      const txs = [];
+      for (const i in transactions) {
+        const tx = transactions[i];
+
+        let balanceChange = tx['value'];
+        if (tx['sender'] === walletId) {
+          balanceChange = -balanceChange;
+        }
+
+        if (balanceChange === 0) {
+          continue; // 0 balance change is not a ETH transaction.
+        }
+
+        txs.push({
+          transactionHash: tx['transaction_hash'],
+          timestamp: toTimestamp(tx['time']),
+          balanceChange: balanceChange / 1000000000000000000, // Wei to ETH.
+        });
+      }
+
+      return txs;
+    },
+  },
   DOGE: {
     dataUrl:
       'https://api.blockchair.com/dogecoin/dashboards/address/<walletId>',

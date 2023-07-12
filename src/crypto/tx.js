@@ -9,6 +9,10 @@ const transactionAPIs = {
     confirmationsFormula: (transactionId, txInfo, lastBlock) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
+      if (blockHeight === -1) {
+        return 0;
+      }
+
       const lastBlockHeight = lastBlock
         ? lastBlock['context']['state']
         : txInfo['context']['state'];
@@ -25,6 +29,10 @@ const transactionAPIs = {
     confirmationsFormula: (transactionId, txInfo, lastBlock) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
+      if (blockHeight === -1) {
+        return 0;
+      }
+
       const lastBlockHeight = lastBlock
         ? lastBlock['context']['state']
         : txInfo['context']['state'];
@@ -41,6 +49,10 @@ const transactionAPIs = {
     confirmationsFormula: (transactionId, txInfo, lastBlock) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
+      if (blockHeight === -1) {
+        return 0;
+      }
+
       const lastBlockHeight = lastBlock
         ? lastBlock['context']['state']
         : txInfo['context']['state'];
@@ -57,6 +69,10 @@ const transactionAPIs = {
     confirmationsFormula: (transactionId, txInfo, lastBlock) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
+      if (blockHeight === -1) {
+        return 0;
+      }
+
       const lastBlockHeight = lastBlock
         ? lastBlock['context']['state']
         : txInfo['context']['state'];
@@ -73,6 +89,10 @@ const transactionAPIs = {
     confirmationsFormula: (transactionId, txInfo, lastBlock) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['block_id'];
+      if (blockHeight === -1) {
+        return 0;
+      }
+
       const lastBlockHeight = lastBlock
         ? lastBlock['context']['state']
         : txInfo['context']['state'];
@@ -89,6 +109,10 @@ const transactionAPIs = {
     confirmationsFormula: (transactionId, txInfo, lastBlock) => {
       const blockHeight =
         txInfo['data'][transactionId]['transaction']['ctsBlockHeight'];
+      if (blockHeight === -1) {
+        return 0;
+      }
+
       const lastBlockHeight = lastBlock
         ? lastBlock['context']['state']
         : txInfo['context']['state'];

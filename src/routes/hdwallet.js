@@ -1,15 +1,12 @@
 import joi from 'joi';
 import { Router } from 'express';
 import { toHexString } from '../utils.js';
-import { supportedSymbols, mnemonic, passphrase, getChainId } from '../cfg.js';
+import { symbolValidator, mnemonic, passphrase, getChainId } from '../cfg.js';
 
 const router = Router();
 
 const hdwalletPostSchema = joi.object({
-  symbol: joi
-    .string()
-    .valid(...supportedSymbols)
-    .required(),
+  symbol: joi.string().custom(symbolValidator).required(),
   accountIndex: joi.number().min(0).default(0),
   externalChain: joi.number().min(0).default(0),
   addressIndex: joi.number().min(0).default(0),
@@ -28,7 +25,8 @@ router.post('/v1/hdwallet', async (req, res, next) => {
 
   try {
     const hdwallet = HDWallet.createWithMnemonic(mnemonic, passphrase);
-    const coinType = { value: getChainId(symbol) };
+    const chainId = getChainId(symbol);
+    const coinType = { value: chainId };
     const privateKey = hdwallet.getDerivedKey(
       coinType,
       accountIndex,

@@ -14,9 +14,19 @@ app.use('/', transactionRouter);
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
   console.error(err);
-  const statusCode = err.statusCode || 500;
-  const errorMessages = err.message || 'Internal Server Error';
-  res.status(statusCode).json({ errors: [errorMessages] });
+
+  let statusCode = 500;
+  let errorMessage = 'Internal Server Error';
+
+  if (err.isAxiosError && err.response) {
+    statusCode = err.response.status;
+    errorMessage = err.response.statusText;
+  } else {
+    statusCode = err.statusCode || statusCode;
+    errorMessage = err.message || errorMessage;
+  }
+
+  res.status(statusCode).json({ errors: [errorMessage] });
 }
 
 app.use(errorHandler);

@@ -32,4 +32,8 @@ docker run -p 3000:3000 -e MNEMONIC="remember relief wool then dad equip team gu
 
 ## Supported Cryptocurrencies
 
-BTC, LTC, ETH, DOGE, ADA
+- Bitcoin (BTC)
+- Litecoin (LTC)
+- Ethereum (ETH)
+- Dogecoin (DOGE)
+- Cardano (ADA)

@@ -1,15 +1,12 @@
 import joi from 'joi';
 import { Router } from 'express';
 import { getTransactionInfo, getWalletTransactions } from '../crypto/tx.js';
-import { supportedSymbols, getChainId } from '../cfg.js';
+import { symbolValidator, getChainId } from '../cfg.js';
 
 const router = Router();
 
 const getTransactionSchema = joi.object({
-  symbol: joi
-    .string()
-    .valid(...supportedSymbols)
-    .required(),
+  symbol: joi.string().custom(symbolValidator).required(),
   transactionId: joi.string().required(),
 });
 
@@ -26,12 +23,13 @@ router.get('/v1/transaction', async (req, res, next) => {
   const { symbol, transactionId } = value;
 
   try {
-    const coinType = { value: getChainId(symbol) };
+    const chainId = getChainId(symbol);
+    const coinType = { value: chainId };
     const url = CoinTypeConfiguration.getTransactionURL(
       coinType,
       transactionId,
     );
-    const info = await getTransactionInfo(symbol, transactionId);
+    const info = await getTransactionInfo(symbol, chainId, transactionId);
 
     const response = { ...info, url };
 
@@ -42,10 +40,7 @@ router.get('/v1/transaction', async (req, res, next) => {
 });
 
 const getWalletTransactionsSchema = joi.object({
-  symbol: joi
-    .string()
-    .valid(...supportedSymbols)
-    .required(),
+  symbol: joi.string().custom(symbolValidator).required(),
   walletId: joi.string().required(),
 });
 
@@ -59,7 +54,8 @@ router.get('/v1/wallet/transactions', async (req, res, next) => {
   const { symbol, walletId } = value;
 
   try {
-    const response = await getWalletTransactions(symbol, walletId);
+    const chainId = getChainId(symbol);
+    const response = await getWalletTransactions(symbol, chainId, walletId);
 
     res.json(response);
   } catch (error) {

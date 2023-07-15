@@ -8,9 +8,10 @@ const transactionInfoAPIs = {
       txInfoUrl:
         'https://api.blockchair.com/bitcoin/dashboards/transaction/<transactionId>',
       queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-      confirmationsFormula: (transactionId, txInfo) => {
-        const blockHeight =
-          txInfo['data'][transactionId]['transaction']['block_id'];
+      requireConfirmations: 6,
+      calculateConfirmations: (transactionId, txInfo) => {
+        const txId = transactionId.toLowerCase();
+        const blockHeight = txInfo['data'][txId]['transaction']['block_id'];
         if (blockHeight === -1) {
           return 0;
         }
@@ -19,7 +20,6 @@ const transactionInfoAPIs = {
 
         return lastBlockHeight - blockHeight + 1;
       },
-      requireConfirmations: 6,
     },
   },
   LTC: {
@@ -27,9 +27,10 @@ const transactionInfoAPIs = {
       txInfoUrl:
         'https://api.blockchair.com/litecoin/dashboards/transaction/<transactionId>',
       queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-      confirmationsFormula: (transactionId, txInfo) => {
-        const blockHeight =
-          txInfo['data'][transactionId]['transaction']['block_id'];
+      requireConfirmations: 24,
+      calculateConfirmations: (transactionId, txInfo) => {
+        const txId = transactionId.toLowerCase();
+        const blockHeight = txInfo['data'][txId]['transaction']['block_id'];
         if (blockHeight === -1) {
           return 0;
         }
@@ -38,7 +39,6 @@ const transactionInfoAPIs = {
 
         return lastBlockHeight - blockHeight + 1;
       },
-      requireConfirmations: 24,
     },
   },
   ETH: {
@@ -46,9 +46,10 @@ const transactionInfoAPIs = {
       txInfoUrl:
         'https://api.blockchair.com/ethereum/dashboards/transaction/<transactionId>',
       queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-      confirmationsFormula: (transactionId, txInfo) => {
-        const blockHeight =
-          txInfo['data'][transactionId]['transaction']['block_id'];
+      requireConfirmations: 12,
+      calculateConfirmations: (transactionId, txInfo) => {
+        const txId = transactionId.toLowerCase();
+        const blockHeight = txInfo['data'][txId]['transaction']['block_id'];
         if (blockHeight === -1) {
           return 0;
         }
@@ -57,7 +58,6 @@ const transactionInfoAPIs = {
 
         return lastBlockHeight - blockHeight + 1;
       },
-      requireConfirmations: 12,
     },
   },
   DOGE: {
@@ -65,9 +65,10 @@ const transactionInfoAPIs = {
       txInfoUrl:
         'https://api.blockchair.com/dogecoin/dashboards/transaction/<transactionId>',
       queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-      confirmationsFormula: (transactionId, txInfo) => {
-        const blockHeight =
-          txInfo['data'][transactionId]['transaction']['block_id'];
+      requireConfirmations: 10,
+      calculateConfirmations: (transactionId, txInfo) => {
+        const txId = transactionId.toLowerCase();
+        const blockHeight = txInfo['data'][txId]['transaction']['block_id'];
         if (blockHeight === -1) {
           return 0;
         }
@@ -76,7 +77,6 @@ const transactionInfoAPIs = {
 
         return lastBlockHeight - blockHeight + 1;
       },
-      requireConfirmations: 10,
     },
   },
   ADA: {
@@ -84,7 +84,8 @@ const transactionInfoAPIs = {
       txInfoUrl:
         'https://api.blockchair.com/cardano/raw/transaction/<transactionId>',
       queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
-      confirmationsFormula: (transactionId, txInfo) => {
+      requireConfirmations: 12,
+      calculateConfirmations: (transactionId, txInfo) => {
         const blockHeight =
           txInfo['data'][transactionId]['transaction']['ctsBlockHeight'];
         if (blockHeight === -1) {
@@ -95,7 +96,6 @@ const transactionInfoAPIs = {
 
         return lastBlockHeight - blockHeight + 1;
       },
-      requireConfirmations: 12,
     },
   },
 };
@@ -109,7 +109,7 @@ export const getTransactionInfo = async (symbol, chainId, transactionId) => {
     }`,
   );
 
-  let confirmations = apiDetails.confirmationsFormula(
+  let confirmations = apiDetails.calculateConfirmations(
     transactionId,
     txInfoResponse.data,
   );
@@ -186,7 +186,8 @@ const walletTransactionsAPIs = {
         ? `?key=${blockchairAPIKey}&transaction_details=true`
         : '?transaction_details=true',
       extractRequireData: (walletId, data) => {
-        const transactions = data['data'][walletId]['calls'];
+        const wallId = walletId.toLowerCase();
+        const transactions = data['data'][wallId]['calls'];
 
         const txs = [];
         for (const i in transactions) {
@@ -198,7 +199,7 @@ const walletTransactionsAPIs = {
           }
 
           if (balanceChange === 0) {
-            continue; // 0 balance change is not a ETH transaction.
+            continue; // 0 balance change is not an ETH transaction.
           }
 
           txs.push({

@@ -1,15 +1,13 @@
 import express from 'express';
 import healthRouter from './routes/health.js';
-import transactionRouter from './routes/tx.js';
-import hdwalletRouter from './routes/hdwallet.js';
+import cryptoRouter from './routes/crypto.js';
 import { initWasm } from '@trustwallet/wallet-core';
 
 const app = express();
 
 app.use(express.json());
 app.use('/', healthRouter);
-app.use('/', hdwalletRouter);
-app.use('/', transactionRouter);
+app.use('/', cryptoRouter);
 
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {

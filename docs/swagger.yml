@@ -49,7 +49,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /v1/transaction:
+  /v1/{symbol}/transaction/{transactionId}:
     get:
       tags:
         - Transaction
@@ -58,12 +58,14 @@ paths:
       operationId: GetTransactionInfo
       parameters:
         - name: symbol
-          in: query
+          in: path
+          required: true
           schema:
             type: string
             example: BTC
         - name: transactionId
-          in: query
+          in: path
+          required: true
           schema:
             type: string
             example: 'bbd4a06ba81cd97a8f1e7ab4fd9fea9f324f5d2c83c50de2b19d6f3dc7197c4d'
@@ -87,31 +89,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /v1/wallet/transactions:
+  /v1/{symbol}/wallet/{walletId}:
     get:
       tags:
-        - Transaction
-      summary: Get Wallet Transactions
-      description: By using this endpoint, you can retrieve last 100 transactions of your wallet.
-      operationId: GetWalletTransactions
+        - Wallet
+      summary: Get Wallet Info
+      description: You can retrieve the wallet info and its last ten transactions using this endpoint.
+      operationId: GetWalletInfo
       parameters:
         - name: symbol
-          in: query
+          in: path
+          required: true
           schema:
             type: string
             example: ETH
         - name: walletId
-          in: query
+          in: path
+          required: true
           schema:
             type: string
             example: '0xb3aafc07e4ea2a66866b2d2d1a8e28deee400770'
       responses:
         200:
-          description: Response to getting the wallet transactions.
+          description: Response to getting the wallet info.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetWalletTransactionsResponse'
+                $ref: '#/components/schemas/GetWalletInfoResponse'
         400:
           description: Error response.
           content:
@@ -189,19 +193,26 @@ components:
         url:
           type: string
           example: 'https://blockchair.com/dogecoin/transaction/bbd4a06ba81cd97a8f1e7ab4fd9fea9f324f5d2c83c50de2b19d6f3dc7197c4d'
-    GetWalletTransactionsResponse:
-      type: array
-      items:
-        type: object
-        properties:
-          transactionHash:
-            type: string
-            example: '0xd7ce8996bc3b56d3c7e378acbd4529fdaaba87264efc3f128a5d3baa7533ec4d'
-          timestamp:
-            type: integer
-            format: int64
-            example: 1689163103
-          balanceChange:
-            type: integer
-            format: float64
-            example: -41.5
+    GetWalletInfoResponse:
+      type: object
+      properties:
+        balance:
+          type: number
+          format: double
+          example: -41.5
+        transactions:
+          type: array
+          items:
+            type: object
+            properties:
+              transactionHash:
+                type: string
+                example: '0xd7ce8996bc3b56d3c7e378acbd4529fdaaba87264efc3f128a5d3baa7533ec4d'
+              timestamp:
+                type: integer
+                format: int64
+                example: 1689163103
+              balanceChange:
+                type: number
+                format: double
+                example: -41.5

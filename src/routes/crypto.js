@@ -2,7 +2,7 @@ import joi from 'joi';
 import { Router } from 'express';
 import { toHexString } from '../utils.js';
 import { symbolValidator, mnemonic, passphrase, getChainId } from '../cfg.js';
-import { getTransactionInfo, getWalletTransactions } from '../crypto/crypto.js';
+import { getTransactionInfo, getWalletInfo } from '../crypto/crypto.js';
 
 const router = Router();
 
@@ -60,8 +60,8 @@ const getTransactionSchema = joi.object({
   transactionId: joi.string().required(),
 });
 
-router.get('/v1/transaction', async (req, res, next) => {
-  const { value, error } = getTransactionSchema.validate(req.query);
+router.get('/v1/:symbol/transaction/:transactionId', async (req, res, next) => {
+  const { value, error } = getTransactionSchema.validate(req.params);
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
     return res.status(400).json({ errors: errorMessages });
@@ -79,7 +79,7 @@ router.get('/v1/transaction', async (req, res, next) => {
       coinType,
       transactionId,
     );
-    const info = await getTransactionInfo(symbol, chainId, transactionId);
+    const info = await getTransactionInfo(symbol, transactionId);
 
     const response = { ...info, url };
 
@@ -94,8 +94,8 @@ const getWalletTransactionsSchema = joi.object({
   walletId: joi.string().required(),
 });
 
-router.get('/v1/wallet/transactions', async (req, res, next) => {
-  const { value, error } = getWalletTransactionsSchema.validate(req.query);
+router.get('/v1/:symbol/wallet/:walletId', async (req, res, next) => {
+  const { value, error } = getWalletTransactionsSchema.validate(req.params);
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
     return res.status(400).json({ errors: errorMessages });
@@ -104,8 +104,7 @@ router.get('/v1/wallet/transactions', async (req, res, next) => {
   const { symbol, walletId } = value;
 
   try {
-    const chainId = getChainId(symbol);
-    const response = await getWalletTransactions(symbol, chainId, walletId);
+    const response = await getWalletInfo(symbol, walletId);
 
     res.json(response);
   } catch (error) {

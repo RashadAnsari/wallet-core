@@ -36,18 +36,6 @@ export function symbolValidator(symbol, helpers) {
   );
 }
 
-export function getChainId(symbol, chainId = null) {
-  if (!chainId) {
-    return cryptoChainIds[symbol.toUpperCase()][0];
-  }
-
-  const chainIds = cryptoChainIds[symbol.toUpperCase()];
-  if (chainIds.includes(chainId)) {
-    return chainId;
-  }
-
-  const error = new Error(`Invalid chainId ${chainId} for symbol ${symbol}`);
-  error.statusCode = 400;
-
-  throw error;
+export function getChainId(symbol) {
+  return cryptoChainIds[symbol.toUpperCase()][0];
 }

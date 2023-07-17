@@ -63,6 +63,12 @@ paths:
           schema:
             type: string
             example: BTC
+        - name: network
+          in: query
+          required: false
+          schema:
+            type: string
+            example: Bitcoin
         - name: transactionId
           in: path
           required: true
@@ -103,6 +109,12 @@ paths:
           schema:
             type: string
             example: ETH
+        - name: network
+          in: query
+          required: false
+          schema:
+            type: string
+            example: Ethereum
         - name: walletId
           in: path
           required: true
@@ -146,6 +158,9 @@ components:
         symbol:
           type: string
           example: BTC
+        network:
+          type: string
+          example: Bitcoin
         accountIndex:
           type: integer
           format: int64
@@ -164,6 +179,8 @@ components:
           default: 0
           minimum: 0
           example: 1
+      required:
+        - symbol
     CreateHDWalletResponse:
       type: object
       properties:

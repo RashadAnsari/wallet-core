@@ -16,26 +16,10 @@ export const mnemonic = getEnv('MNEMONIC');
 export const passphrase = getEnv('PASSPHRASE', '');
 export const blockchairAPIKey = getEnv('BLOCKCHAIR_API_KEY', '');
 
-export const cryptoChainIds = {
-  BTC: [0],
-  LTC: [2],
-  ETH: [60],
-  DOGE: [3],
-  ADA: [1815],
+export const cryptoNetworks = {
+  BTC: ['Bitcoin'],
+  LTC: ['Litecoin'],
+  ETH: ['Ethereum'],
+  DOGE: ['Dogecoin'],
+  ADA: ['Cardano'],
 };
-
-export function symbolValidator(symbol, helpers) {
-  const cryptoSymbols = Object.keys(cryptoChainIds);
-
-  if (cryptoSymbols.includes(symbol.toUpperCase())) {
-    return symbol.toUpperCase();
-  }
-
-  return helpers.message(
-    '"symbol" must be one of [' + cryptoSymbols.join(', ') + ']',
-  );
-}
-
-export function getChainId(symbol) {
-  return cryptoChainIds[symbol.toUpperCase()][0];
-}

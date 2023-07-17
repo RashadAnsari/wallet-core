@@ -90,8 +90,11 @@ const transactionInfoAPIs = {
   },
 };
 
-export const getTransactionInfo = async (symbol, transactionId) => {
-  const apiDetails = transactionInfoAPIs[symbol];
+export const getTransactionInfo = async (symbol, network, transactionId) => {
+  const apiDetails =
+    network && transactionInfoAPIs[symbol][network]
+      ? transactionInfoAPIs[symbol][network]
+      : transactionInfoAPIs[symbol];
 
   const txInfoResponse = await axios.get(
     `${apiDetails.txInfoUrl.replace('<transactionId>', transactionId)}${
@@ -285,8 +288,11 @@ const walletInfoAPIs = {
   },
 };
 
-export const getWalletInfo = async (symbol, walletId) => {
-  const apiDetails = walletInfoAPIs[symbol];
+export const getWalletInfo = async (symbol, network, walletId) => {
+  const apiDetails =
+    network && walletInfoAPIs[symbol][network]
+      ? walletInfoAPIs[symbol][network]
+      : walletInfoAPIs[symbol];
 
   const walletResponse = await axios.get(
     `${apiDetails.dataUrl.replace('<walletId>', walletId)}${

@@ -63,13 +63,13 @@ router.post('/v1/hdwallet', async (req, res, next) => {
 const getTransactionSchema = joi.object({
   symbol: joi.string().custom(symbolValidator).required(),
   network: joi.string().custom(networkValidator),
-  transactionId: joi.string().required(),
+  transactionId: joi.string().hex().required(),
 });
 
 router.get('/v1/:symbol/transaction/:transactionId', async (req, res, next) => {
   const { value, error } = getTransactionSchema.validate({
-    ...req.params,
     ...req.query,
+    ...req.params,
   });
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
@@ -105,8 +105,8 @@ const getWalletTransactionsSchema = joi.object({
 
 router.get('/v1/:symbol/wallet/:walletId', async (req, res, next) => {
   const { value, error } = getWalletTransactionsSchema.validate({
-    ...req.params,
     ...req.query,
+    ...req.params,
   });
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
@@ -119,6 +119,38 @@ router.get('/v1/:symbol/wallet/:walletId', async (req, res, next) => {
     const response = await getWalletInfo(symbol, network, walletId);
 
     res.json(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+const broadcastTransactionSchema = joi.object({
+  symbol: joi.string().custom(symbolValidator).required(),
+  network: joi.string().custom(networkValidator),
+  signedTransactionHex: joi.string().hex().required(),
+});
+
+router.post('/v1/:symbol/transaction/broadcast', async (req, res, next) => {
+  const { value, error } = broadcastTransactionSchema.validate(req.body);
+  if (error) {
+    const errorMessages = error.details.map((detail) => detail.message);
+    return res.status(400).json({ errors: errorMessages });
+  }
+
+  const { symbol, network, signedTransactionHex } = value;
+
+  try {
+    console.log(symbol, network, signedTransactionHex);
+
+    res.json({});
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/v1/:symbol/transaction/sign', async (req, res, next) => {
+  try {
+    res.json({});
   } catch (error) {
     next(error);
   }

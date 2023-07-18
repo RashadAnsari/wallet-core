@@ -14,17 +14,18 @@ function errorHandler(err, req, res, next) {
   console.error(err);
 
   let statusCode = 500;
-  let errorMessage = 'Internal Server Error';
+  let errorMessages = ['Internal Server Error'];
 
   if (err.isAxiosError && err.response) {
     statusCode = err.response.status;
-    errorMessage = err.response.statusText;
+    errorMessages = [err.response.statusText];
   } else {
     statusCode = err.statusCode || statusCode;
-    errorMessage = err.message || errorMessage;
+    errorMessages =
+      err.messages || (err.message ? [err.message] : errorMessages);
   }
 
-  res.status(statusCode).json({ errors: [errorMessage] });
+  res.status(statusCode).json({ errors: errorMessages });
 }
 
 app.use(errorHandler);

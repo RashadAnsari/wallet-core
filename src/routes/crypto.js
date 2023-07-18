@@ -1,6 +1,7 @@
 import joi from 'joi';
 import { Router } from 'express';
 import { mnemonic, passphrase } from '../cfg.js';
+import { signTransaction } from '../crypto/sign.js';
 import { getTransactionInfo, getWalletInfo } from '../crypto/crypto.js';
 import {
   symbolValidator,
@@ -124,6 +125,35 @@ router.get('/v1/:symbol/wallet/:walletId', async (req, res, next) => {
   }
 });
 
+const signTransactionSchema = joi.object({
+  symbol: joi.string().custom(symbolValidator).required(),
+  network: joi.string().custom(networkValidator),
+  data: joi.object().required(),
+});
+
+router.post('/v1/:symbol/transaction/sign', async (req, res, next) => {
+  const { value, error } = signTransactionSchema.validate(req.body);
+  if (error) {
+    const errorMessages = error.details.map((detail) => detail.message);
+    return res.status(400).json({ errors: errorMessages });
+  }
+
+  const { symbol, network, data } = value;
+
+  try {
+    const response = signTransaction(
+      symbol,
+      network,
+      data,
+      req.app.locals.core,
+    );
+
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
 const broadcastTransactionSchema = joi.object({
   symbol: joi.string().custom(symbolValidator).required(),
   network: joi.string().custom(networkValidator),
@@ -142,14 +172,6 @@ router.post('/v1/:symbol/transaction/broadcast', async (req, res, next) => {
   try {
     console.log(symbol, network, signedTransactionHex);
 
-    res.json({});
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post('/v1/:symbol/transaction/sign', async (req, res, next) => {
-  try {
     res.json({});
   } catch (error) {
     next(error);

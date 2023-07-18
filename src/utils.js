@@ -55,3 +55,10 @@ export function toHexString(byteArray) {
 export function toTimestamp(date) {
   return Date.parse(date) / 1000; // convert to seconds.
 }
+
+export function apiError(messages, statusCode) {
+  const err = new Error();
+  err.statusCode = statusCode;
+  err.messages = messages;
+  return err;
+}

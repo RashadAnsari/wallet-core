@@ -1,6 +1,6 @@
 import joi from 'joi';
-import { toHexString } from '../utils.js';
 import { TW } from '@trustwallet/wallet-core';
+import { toHexString, apiError } from '../utils.js';
 
 const transactionSigners = {
   DOGE: {
@@ -100,11 +100,10 @@ export const signTransaction = (symbol, network, data, walletCore) => {
 
   const { value, error } = signer.validator.validate(data);
   if (error) {
-    const err = new Error();
-    const errorMessages = error.details.map((detail) => detail.message);
-    err.statusCode = 400;
-    err.messages = errorMessages;
-    throw err;
+    throw apiError(
+      error.details.map((detail) => detail.message),
+      400,
+    );
   }
 
   return signer.sign(value, walletCore);

@@ -2,7 +2,11 @@ import joi from 'joi';
 import { Router } from 'express';
 import { mnemonic, passphrase } from '../cfg.js';
 import { signTransaction } from '../crypto/sign.js';
-import { getTransactionInfo, getWalletInfo } from '../crypto/crypto.js';
+import {
+  getTransactionInfo,
+  getWalletInfo,
+  broadcastTransaction,
+} from '../crypto/crypto.js';
 import {
   symbolValidator,
   networkValidator,
@@ -170,9 +174,9 @@ router.post('/v1/:symbol/transaction/broadcast', async (req, res, next) => {
   const { symbol, network, signedTransactionHex } = value;
 
   try {
-    console.log(symbol, network, signedTransactionHex);
+    await broadcastTransaction(symbol, network, signedTransactionHex);
 
-    res.json({});
+    res.status(204).end();
   } catch (error) {
     next(error);
   }

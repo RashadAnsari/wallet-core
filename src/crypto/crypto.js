@@ -302,3 +302,57 @@ export const getWalletInfo = async (symbol, network, walletId) => {
 
   return apiDetails.extractRequireData(walletId, walletResponse.data);
 };
+
+const broadcastingAPIs = {
+  BTC: {
+    broadcastUrl: 'https://api.blockchair.com/bitcoin/push/transaction',
+    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
+    postData: (signedTransactionHex) => {
+      return `data=${signedTransactionHex}`;
+    },
+  },
+  LTC: {
+    broadcastUrl: 'https://api.blockchair.com/litecoin/push/transaction',
+    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
+    postData: (signedTransactionHex) => {
+      return `data=${signedTransactionHex}`;
+    },
+  },
+  ETH: {
+    broadcastUrl: 'https://api.blockchair.com/ethereum/push/transaction',
+    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
+    postData: (signedTransactionHex) => {
+      return `data=${signedTransactionHex}`;
+    },
+  },
+  DOGE: {
+    broadcastUrl: 'https://api.blockchair.com/dogecoin/push/transaction',
+    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
+    postData: (signedTransactionHex) => {
+      return `data=${signedTransactionHex}`;
+    },
+  },
+  ADA: {
+    broadcastUrl: 'https://api.blockchair.com/cardano/push/transaction',
+    queryStrings: blockchairAPIKey ? `?key=${blockchairAPIKey}` : '',
+    postData: (signedTransactionHex) => {
+      return `data=${signedTransactionHex}`;
+    },
+  },
+};
+
+export const broadcastTransaction = async (
+  symbol,
+  network,
+  signedTransactionHex,
+) => {
+  const apiDetails =
+    network && broadcastingAPIs[symbol][network]
+      ? broadcastingAPIs[symbol][network]
+      : broadcastingAPIs[symbol];
+
+  await axios.post(
+    `${apiDetails.broadcastUrl}${apiDetails.queryStrings}`,
+    apiDetails.postData(signedTransactionHex),
+  );
+};

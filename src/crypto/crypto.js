@@ -131,9 +131,7 @@ const walletInfoAPIs = {
       const transactions = data['data'][walletId]['transactions'];
 
       const txs = [];
-      for (const i in transactions) {
-        const tx = transactions[i];
-
+      for (const tx of transactions) {
         txs.push({
           transactionHash: tx['hash'],
           timestamp: toTimestamp(tx['time']),
@@ -158,9 +156,7 @@ const walletInfoAPIs = {
       const transactions = data['data'][walletId]['transactions'];
 
       const txs = [];
-      for (const i in transactions) {
-        const tx = transactions[i];
-
+      for (const tx of transactions) {
         txs.push({
           transactionHash: tx['hash'],
           timestamp: toTimestamp(tx['time']),
@@ -186,9 +182,7 @@ const walletInfoAPIs = {
       const transactions = data['data'][wallId]['calls'];
 
       const txs = [];
-      for (const i in transactions) {
-        const tx = transactions[i];
-
+      for (const tx of transactions) {
         let balanceChange = tx['value'];
         if (tx['sender'] === walletId) {
           balanceChange = -balanceChange;
@@ -222,9 +216,7 @@ const walletInfoAPIs = {
       const transactions = data['data'][walletId]['transactions'];
 
       const txs = [];
-      for (const i in transactions) {
-        const tx = transactions[i];
-
+      for (const tx of transactions) {
         txs.push({
           transactionHash: tx['hash'],
           timestamp: toTimestamp(tx['time']),
@@ -246,26 +238,25 @@ const walletInfoAPIs = {
       const transactions = info['caTxList'];
 
       const txs = [];
-      for (const i in transactions) {
-        const tx = transactions[i];
+      for (const tx of transactions) {
         const inputs = tx['ctbInputs'];
         const outputs = tx['ctbOutputs'];
 
         let inputAmount = 0;
-        for (const j in inputs) {
-          const address = inputs[j]['ctaAddress'];
+        for (const input of inputs) {
+          const address = input['ctaAddress'];
           if (address === walletId) {
-            const amountStr = inputs[j]['ctaAmount']['getCoin'];
+            const amountStr = input['ctaAmount']['getCoin'];
             const amount = parseInt(amountStr, 10);
             inputAmount += amount;
           }
         }
 
         let outputAmount = 0;
-        for (const j in outputs) {
-          const address = outputs[j]['ctaAddress'];
+        for (const output of outputs) {
+          const address = output['ctaAddress'];
           if (address === walletId) {
-            const amountStr = outputs[j]['ctaAmount']['getCoin'];
+            const amountStr = output['ctaAmount']['getCoin'];
             const amount = parseInt(amountStr, 10);
             outputAmount += amount;
           }
@@ -275,7 +266,7 @@ const walletInfoAPIs = {
 
         txs.push({
           transactionHash: tx['ctbId'],
-          timestamp: tx['ctbTimeIssued'], // seconds.
+          timestamp: tx['ctbTimeIssued'], // Seconds.
           balanceChange: balanceChange,
         });
       }

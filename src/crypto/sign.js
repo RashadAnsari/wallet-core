@@ -2,6 +2,32 @@ import joi from 'joi';
 import { TW } from '@trustwallet/wallet-core';
 import { toHexString, apiError } from '../utils.js';
 
+const signingErrors = {
+  1: 'General signing error',
+  2: 'Internal signing error',
+  3: 'Low balance error',
+  4: 'Zero amount requested error',
+  5: 'Missing private key error',
+  15: 'Invalid private key error',
+  16: 'Invalid address error',
+  17: 'Invalid utxo error',
+  18: 'Invalid utxo amount error',
+  6: 'Wrong fee error',
+  7: 'Signing error',
+  8: 'Transaction too big error',
+  9: 'Missing input utxos error',
+  10: 'Not enough utxos error',
+  11: 'Script redeem error',
+  12: 'Script output error',
+  13: 'Script witness program error',
+  14: 'Invalid memo error',
+  19: 'Input parse error',
+  20: 'No support n2n error',
+  21: 'Signatures count error',
+  22: 'Invalid params error',
+  23: 'Invalid requested token amount error',
+};
+
 const transactionSigners = {
   DOGE: {
     validator: joi.object({
@@ -23,7 +49,8 @@ const transactionSigners = {
           amount: joi.number().greater(0).required(),
           address: joi.string().required(),
         })
-        .min(1),
+        .length(1), // FIXME: Add support for multiple outputs.
+      // .min(1),
       changeAddress: joi.string().required(),
     }),
     sign: (data, walletCore) => {
@@ -52,29 +79,15 @@ const transactionSigners = {
         privateKeys.push(HexCoding.decode(input.privateKey));
       }
 
-      const extraOutputs = [];
-      for (const i in outputs) {
-        if (i == 0) {
-          continue;
-        }
-
-        extraOutputs.push(
-          TW.Bitcoin.Proto.OutputAddress.create({
-            amount: Math.floor(outputs[i].amount * 100000000), // DOGE to Satoshi.
-            toAddress: outputs[i].address,
-          }),
-        );
-      }
-
       const signingInput = TW.Bitcoin.Proto.SigningInput.create({
         hashType: BitcoinScript.hashTypeForCoin(CoinType.dogecoin),
-        byteFee: 5000,
+        byteFee: 500000, // Recomended by https://blockchair.com/dogecoin
+        useMaxUtxo: true, // Use all utxos amounts.
         amount: Math.floor(outputs[0].amount * 100000000), // DOGE to Satoshi.
         toAddress: outputs[0].address,
         changeAddress: changeAddress,
         privateKey: privateKeys,
         utxo: unspentTransactions,
-        extraOutputs: extraOutputs,
         coinType: CoinType.dogecoin.value,
       });
 
@@ -83,8 +96,11 @@ const transactionSigners = {
       const outputData = AnySigner.sign(encoded, CoinType.dogecoin);
       const output = TW.Bitcoin.Proto.SigningOutput.decode(outputData);
 
+      if (output.error !== 0) {
+        throw apiError([signingErrors[output.error]], 400);
+      }
+
       return {
-        errorCode: output.error, // 0 for success.
         transactionId: output.transactionId,
         signedTransactionHex: toHexString(output.encoded),
       };

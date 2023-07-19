@@ -23,9 +23,9 @@ export function networkValidator(network, helpers) {
   }
 
   const networks = cryptoNetworks[symbol.toUpperCase()];
-  for (const i in networks) {
-    if (networks[i].toLowerCase() === network.toLowerCase()) {
-      return networks[i];
+  for (const net of networks) {
+    if (net.toLowerCase() === network.toLowerCase()) {
+      return net;
     }
   }
 
@@ -53,7 +53,7 @@ export function toHexString(byteArray) {
 }
 
 export function toTimestamp(date) {
-  return Date.parse(date) / 1000; // convert to seconds.
+  return Date.parse(date) / 1000; // Convert to seconds.
 }
 
 export function apiError(messages, statusCode) {

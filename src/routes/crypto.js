@@ -135,7 +135,7 @@ const signTransactionSchema = joi.object({
   data: joi.object().required(),
 });
 
-router.post('/v1/:symbol/transaction/sign', async (req, res, next) => {
+router.post('/v1/transaction/sign', async (req, res, next) => {
   const { value, error } = signTransactionSchema.validate(req.body);
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);
@@ -164,7 +164,7 @@ const broadcastTransactionSchema = joi.object({
   signedTransactionHex: joi.string().hex().required(),
 });
 
-router.post('/v1/:symbol/transaction/broadcast', async (req, res, next) => {
+router.post('/v1/transaction/broadcast', async (req, res, next) => {
   const { value, error } = broadcastTransactionSchema.validate(req.body);
   if (error) {
     const errorMessages = error.details.map((detail) => detail.message);

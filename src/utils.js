@@ -62,3 +62,19 @@ export function apiError(messages, statusCode) {
   err.messages = messages;
   return err;
 }
+
+export function fromSatoshi(n) {
+  return n / 100000000;
+}
+
+export function toSatoshi(n) {
+  return Math.round(n * 100000000);
+}
+
+export function fromWei(n) {
+  return n / 1000000000000000000;
+}
+
+export function toWei(n) {
+  return n * 1000000000000000000;
+}

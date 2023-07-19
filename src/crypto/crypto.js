@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { blockchairAPIKey } from '../cfg.js';
-import { toTimestamp } from '../utils.js';
+import { toTimestamp, fromSatoshi, fromWei } from '../utils.js';
 
 const transactionInfoAPIs = {
   BTC: {
@@ -135,12 +135,12 @@ const walletInfoAPIs = {
         txs.push({
           transactionHash: tx['hash'],
           timestamp: toTimestamp(tx['time']),
-          balanceChange: tx['balance_change'] / 100000000, // Satoshi to BTC.
+          balanceChange: fromSatoshi(tx['balance_change']),
         });
       }
 
       return {
-        balance: info['balance'] / 100000000, // Satoshi to BTC.
+        balance: fromSatoshi(info['balance']),
         transactions: txs,
       };
     },
@@ -160,12 +160,12 @@ const walletInfoAPIs = {
         txs.push({
           transactionHash: tx['hash'],
           timestamp: toTimestamp(tx['time']),
-          balanceChange: tx['balance_change'] / 100000000, // Satoshi to LTC.
+          balanceChange: fromSatoshi(tx['balance_change']),
         });
       }
 
       return {
-        balance: info['balance'] / 100000000, // Satoshi to LTC.
+        balance: fromSatoshi(info['balance']),
         transactions: txs,
       };
     },
@@ -195,12 +195,12 @@ const walletInfoAPIs = {
         txs.push({
           transactionHash: tx['transaction_hash'],
           timestamp: toTimestamp(tx['time']),
-          balanceChange: balanceChange / 1000000000000000000, // Wei to ETH.
+          balanceChange: fromWei(balanceChange),
         });
       }
 
       return {
-        balance: info['balance'] / 1000000000000000000, // Wei to ETH.,
+        balance: fromWei(info['balance']),
         transactions: txs,
       };
     },
@@ -220,12 +220,12 @@ const walletInfoAPIs = {
         txs.push({
           transactionHash: tx['hash'],
           timestamp: toTimestamp(tx['time']),
-          balanceChange: tx['balance_change'] / 100000000, // Satoshi to DOGE.
+          balanceChange: fromSatoshi(tx['balance_change']),
         });
       }
 
       return {
-        balance: info['balance'] / 100000000, // Satoshi to DOGE.
+        balance: fromSatoshi(info['balance']),
         transactions: txs,
       };
     },

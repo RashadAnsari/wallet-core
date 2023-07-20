@@ -141,38 +141,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /v1/transaction/sign:
-    post:
-      tags:
-        - Transaction
-      summary: Sign a Transaction
-      description: By using this endpoint, you can sign a transaction.
-      operationId: SignTransaction
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignTransactionRequest'
-      responses:
-        200:
-          description: Response to signing a transaction.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SignTransactionResponse'
-        400:
-          description: Error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Error response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
   /v1/transaction/broadcast:
     post:
       tags:
@@ -308,27 +276,3 @@ components:
       required:
         - symbol
         - signedTransactionHex
-    SignTransactionRequest:
-      type: object
-      properties:
-        symbol:
-          type: string
-          example: DOGE
-        network:
-          type: string
-          example: Dogecoin
-        data:
-          type: object
-          description: Depends on the type of your coin.
-      required:
-        - symbol
-        - data
-    SignTransactionResponse:
-      type: object
-      properties:
-        transactionId:
-          type: string
-          example: '8ef2c44c9c67dd57e03b63dfec4d95c53405dcc5d8f0e2da6e45888afddb7205'
-        signedTransactionHex:
-          type: string
-          example: '01000000024f8459c39f1454a035f5dfb5a3080b961dc07b9ee464d7454251e2efd52dc6d8000000006a47304402207ce248afd39ae4f558a7bb50d2fcb0744b22a71b93fb3476add57231e25449040220028d151e6c5a3d24581570d21917c1eaf82c621fac9bcbb62125e44503d92ed8012103204ac306eda7509174a9d2969d68c76c2cf2af61cd489bbd9b5e15c0bc1f702700000000d3c71144b59780191ca6631f428b9e1d1878c4bfb45eaca18c78751e8252936a010000006a473044022050a659cad3814ce51087ef3b73472b35135fddf7976bdbde427dee36400d08b002203c798194be659535f155a4305bbffc1153cc912b8c523420ff1810d482bf3bb3012103204ac306eda7509174a9d2969d68c76c2cf2af61cd489bbd9b5e15c0bc1f70270000000001045e85cc010000001976a914f223f74dc558724d9ac930dcba9df2ac1266e09588ac00000000'

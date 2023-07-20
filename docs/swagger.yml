@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Wallet Core API
-  description: Trust Wallet Core API wrapper and more.
+  description: An all-in-one cryptocurrency service that enables users to effortlessly generate HD wallets, access wallet information, retrieve transaction details, broadcast transactions, and offers various other cutting-edge features for seamless cryptocurrency management.
   version: 0.0.0
 servers:
   - url: http://127.0.0.1:3000

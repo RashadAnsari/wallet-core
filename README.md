@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/RashadAnsari/wallet-core/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/RashadAnsari/wallet-core/actions/workflows/main.yml)
 
-Trust Wallet Core API wrapper and more.
+An all-in-one cryptocurrency service that enables users to effortlessly generate HD wallets, access wallet information, retrieve transaction details, broadcast transactions, and offers various other cutting-edge features for seamless cryptocurrency management.
 
 ## API Documentation
 
